@@ -2,7 +2,7 @@ package com.bignerdranch.android.flashcardmath
 
 
 import android.annotation.SuppressLint
-
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -13,11 +13,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
 import kotlin.random.Random
-import org.junit.Test
-import org.junit.Assert.*
-
 
 val SIZE = 9
+val NEG_SYMBOL = "0"
+val POS_SYMBOL = "1"
 var currentNumber: Int = 0
 var topOperandArray: IntArray = IntArray(SIZE)
 var bottomOperandArray:IntArray = IntArray(SIZE)
@@ -29,7 +28,7 @@ var correctAnswer:Int = 0
 private lateinit var  firstOperand:TextView
 private lateinit var secondOperand: TextView
 private lateinit var operation:TextView
-private lateinit var inputBox: TextInputEditText
+private lateinit var inputBox: EditText
 private lateinit var submit: Button
 private lateinit var generateNum: Button
 class FlashcardActivity: AppCompatActivity() {
@@ -37,20 +36,19 @@ class FlashcardActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         //Intent intent = getIntent()
 
         val intent = intent
         val str = intent.getStringExtra("message_key")
 
-        Toast.makeText(this, str, Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Welcome, $str",Toast.LENGTH_SHORT).show()
 
 
         setContentView(R.layout.flashcard_main)
         firstOperand = findViewById(R.id.firstOperand)
         secondOperand = findViewById(R.id.secondOperand)
         operation = findViewById(R.id.operation)
-        inputBox = findViewById(R.id.inputBox)
+        inputBox = findViewById(R.id.editTextNumberSigned)
         submit = findViewById(R.id.submitButton)
         generateNum = findViewById(R.id.generateNum)
 
@@ -63,6 +61,8 @@ class FlashcardActivity: AppCompatActivity() {
         }
 
     }
+
+
 
 
     private fun updateData() {
@@ -78,9 +78,7 @@ class FlashcardActivity: AppCompatActivity() {
         firstOperand.text = topOperandArray[currentNumber].toString()
         secondOperand.text = bottomOperandArray[currentNumber].toString()
 
-
-
-        if (operationsArray[currentNumber].toString() == "1") {
+        if (operationsArray[currentNumber].toString() == POS_SYMBOL) {
             operation.text = "+"
         } else {
             operation.text = "-"
@@ -88,20 +86,22 @@ class FlashcardActivity: AppCompatActivity() {
         generateNum.isEnabled = false
 
 
+
+
+
     }
 
     private fun handleSubmit() {
 
         // Adding
-        if (operationsArray[currentNumber].toString() == "1") {
-
+        if (operationsArray[currentNumber].toString() == POS_SYMBOL) {
 
             correctAnswer = topOperandArray[currentNumber] + bottomOperandArray[currentNumber]
             if (correctAnswer.toString() == inputBox.text.toString()) {
                 problemsCorrect++
-                Toast.makeText(this, "You got the problem correct", Toast.LENGTH_SHORT)
+                Toast.makeText(this,"You got the problem correct",Toast.LENGTH_SHORT).show()
             } else {
-                Toast.makeText(this, "You got the problem incorrect", Toast.LENGTH_SHORT)
+                Toast.makeText(this,"You got the problem incorrect",Toast.LENGTH_SHORT).show()
             }
 
             // Subtracting
@@ -111,36 +111,41 @@ class FlashcardActivity: AppCompatActivity() {
             correctAnswer = topOperandArray[currentNumber] - bottomOperandArray[currentNumber]
             if (correctAnswer.toString() == inputBox.text.toString()) {
                 problemsCorrect++
-                Toast.makeText(this, "You got the problem correct", Toast.LENGTH_SHORT)
+                Toast.makeText(this,"You got the problem correct",Toast.LENGTH_SHORT).show()
             } else {
-                Toast.makeText(this, "You got the problem incorrect", Toast.LENGTH_SHORT)
+                Toast.makeText(this,"You got the problem incorrect",Toast.LENGTH_SHORT).show()
             }
 
 
         }
+
+
         currentNumber++
-        isOutOfRange()
-        if (currentNumber > 9) {
-
-
-            Toast.makeText(
-                this,
-                "You got " + problemsCorrect.toString() + "/10 correct!",
-                Toast.LENGTH_SHORT
-            )
+        if (currentNumber >= SIZE) {
+            Toast.makeText(this,"You got " + problemsCorrect.toString() + "/10 correct!",Toast.LENGTH_LONG).show()
             generateNum.isEnabled = true
             currentNumber = 0
             problemsCorrect = 0
+            operation.text = ""
+            firstOperand.text = ""
+            secondOperand.text = ""
+
+
+        } else {
+            firstOperand.text = topOperandArray[currentNumber].toString()
+            secondOperand.text = bottomOperandArray[currentNumber].toString()
+
+            if(operationsArray[currentNumber] == 0) {
+                operation.text = "-"
+            } else {
+                operation.text = "+"
+            }
+            inputBox.text.clear()
         }
+    }
+
 
     }
 
-    @Test
-    fun isOutOfRange() {
-        // Checks the logic of our handle submit to make sure we aren't out of range of our arrays (10 problems)
-        assert(currentNumber <= 10 )
-
-    }
-}
 
 
