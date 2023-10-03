@@ -2,6 +2,7 @@ package com.bignerdranch.android.flashcardmath
 
 
 import android.annotation.SuppressLint
+
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -12,8 +13,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
 import kotlin.random.Random
+import org.junit.Test
+import org.junit.Assert.*
 
-val SIZE = 10
+
+val SIZE = 9
 var currentNumber: Int = 0
 var topOperandArray: IntArray = IntArray(SIZE)
 var bottomOperandArray:IntArray = IntArray(SIZE)
@@ -32,6 +36,16 @@ class FlashcardActivity: AppCompatActivity() {
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
+        //Intent intent = getIntent()
+
+        val intent = intent
+        val str = intent.getStringExtra("message_key")
+
+        Toast.makeText(this, str, Toast.LENGTH_SHORT).show()
+
+
         setContentView(R.layout.flashcard_main)
         firstOperand = findViewById(R.id.firstOperand)
         secondOperand = findViewById(R.id.secondOperand)
@@ -51,11 +65,9 @@ class FlashcardActivity: AppCompatActivity() {
     }
 
 
-
-
     private fun updateData() {
 
-        for (i in 0..SIZE) {
+        for (i in 0 until SIZE) {
 
             topOperandArray[i] = Random.nextInt(1, 100)
             bottomOperandArray[i] = Random.nextInt(1, 21)
@@ -66,6 +78,8 @@ class FlashcardActivity: AppCompatActivity() {
         firstOperand.text = topOperandArray[currentNumber].toString()
         secondOperand.text = bottomOperandArray[currentNumber].toString()
 
+
+
         if (operationsArray[currentNumber].toString() == "1") {
             operation.text = "+"
         } else {
@@ -74,53 +88,59 @@ class FlashcardActivity: AppCompatActivity() {
         generateNum.isEnabled = false
 
 
-
-
-
     }
 
-        private fun handleSubmit() {
+    private fun handleSubmit() {
 
-            // Adding
-            if (operationsArray[currentNumber].toString() == "1") {
+        // Adding
+        if (operationsArray[currentNumber].toString() == "1") {
 
-                correctAnswer = topOperandArray[currentNumber] + bottomOperandArray[currentNumber]
-                if (correctAnswer.toString() == inputBox.text.toString()) {
-                    problemsCorrect++
-                    Toast.makeText(this,"You got the problem correct",Toast.LENGTH_SHORT)
-                } else {
-                    Toast.makeText(this,"You got the problem incorrect",Toast.LENGTH_SHORT)
-                }
+
+            correctAnswer = topOperandArray[currentNumber] + bottomOperandArray[currentNumber]
+            if (correctAnswer.toString() == inputBox.text.toString()) {
+                problemsCorrect++
+                Toast.makeText(this, "You got the problem correct", Toast.LENGTH_SHORT)
+            } else {
+                Toast.makeText(this, "You got the problem incorrect", Toast.LENGTH_SHORT)
+            }
 
             // Subtracting
+        } else {
+
+
+            correctAnswer = topOperandArray[currentNumber] - bottomOperandArray[currentNumber]
+            if (correctAnswer.toString() == inputBox.text.toString()) {
+                problemsCorrect++
+                Toast.makeText(this, "You got the problem correct", Toast.LENGTH_SHORT)
             } else {
-
-
-                correctAnswer = topOperandArray[currentNumber] - bottomOperandArray[currentNumber]
-                if (correctAnswer.toString() == inputBox.text.toString()) {
-                    problemsCorrect++
-                    Toast.makeText(this,"You got the problem correct",Toast.LENGTH_SHORT)
-                } else {
-                    Toast.makeText(this,"You got the problem incorrect",Toast.LENGTH_SHORT)
-                }
-
-
-            }
-            currentNumber++
-            if (currentNumber > 9) {
-
-
-                Toast.makeText(this,"You got " + problemsCorrect.toString() + "/10 correct!",Toast.LENGTH_SHORT)
-                generateNum.isEnabled = true
-                currentNumber = 0
-                problemsCorrect = 0
+                Toast.makeText(this, "You got the problem incorrect", Toast.LENGTH_SHORT)
             }
 
 
+        }
+        currentNumber++
+        isOutOfRange()
+        if (currentNumber > 9) {
+
+
+            Toast.makeText(
+                this,
+                "You got " + problemsCorrect.toString() + "/10 correct!",
+                Toast.LENGTH_SHORT
+            )
+            generateNum.isEnabled = true
+            currentNumber = 0
+            problemsCorrect = 0
+        }
 
     }
 
+    @Test
+    fun isOutOfRange() {
+        // Checks the logic of our handle submit to make sure we aren't out of range of our arrays (10 problems)
+        assert(currentNumber <= 10 )
 
-
+    }
 }
+
 
