@@ -14,6 +14,7 @@ import android.widget.Toast
 
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
+import org.junit.Test
 import kotlin.random.Random
 
 val SIZE = 9
@@ -196,6 +197,12 @@ class FlashcardActivity: AppCompatActivity() {
         }
         generateNum.isEnabled = false
 
+    }
+
+    @Test
+    private fun checkProblemOverflow() {
+        // Ensures we do not go past 10 problems
+        assert(currentNumber > 9)
     }
 }
 
