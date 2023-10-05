@@ -4,12 +4,14 @@ package com.bignerdranch.android.flashcardmath
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
 import kotlin.random.Random
@@ -32,12 +34,15 @@ private lateinit var inputBox: EditText
 private lateinit var submit: Button
 private lateinit var generateNum: Button
 class FlashcardActivity: AppCompatActivity() {
+
+
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //Intent intent = getIntent()
 
+
+        //Intent intent = getIntent()
         val intent = intent
         val str = intent.getStringExtra("message_key")
 
@@ -61,9 +66,6 @@ class FlashcardActivity: AppCompatActivity() {
         }
 
     }
-
-
-
 
     private fun updateData() {
 
@@ -144,8 +146,58 @@ class FlashcardActivity: AppCompatActivity() {
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        val topOperandArray_save = topOperandArray
+        val bottomOperandArray_save = bottomOperandArray
+        val operationsArray_save = operationsArray
+        val problemsCorrect_save = problemsCorrect
+        val currentNumber_save = currentNumber
+
+        outState.putInt("savedCurrentNumber", currentNumber)
+        outState.putInt("savedProblemsCorrect", problemsCorrect)
+        outState.putIntArray("savedBottomOperandArray", bottomOperandArray)
+        outState.putIntArray("savedTopOperandArray", topOperandArray)
+        outState.putIntArray("savedOperationsArray", operationsArray)
+
 
     }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+
+        val userTopArray = savedInstanceState.getIntArray("savedTopOperandArray")
+        val userBottomArray = savedInstanceState.getIntArray("savedBottomOperandArray")
+        val userOperandArray = savedInstanceState.getIntArray("savedOperationsArray")
+        val userScore = savedInstanceState.getInt("savedProblemsCorrect")
+        val userCurrentProblem = savedInstanceState.getInt("savedCurrentNumber")
+
+        currentNumber= userCurrentProblem
+
+        if (userTopArray != null) {
+            topOperandArray = userTopArray
+        }
+        if (userBottomArray != null) {
+            bottomOperandArray = userBottomArray
+        }
+        if (userOperandArray != null) {
+            operationsArray = userOperandArray
+        }
+        problemsCorrect = userScore
+
+        firstOperand.text = topOperandArray[userCurrentProblem].toString()
+        secondOperand.text = bottomOperandArray[userCurrentProblem].toString()
+
+        if (operationsArray[userCurrentProblem].toString() == POS_SYMBOL) {
+            operation.text = "+"
+        } else {
+            operation.text = "-"
+        }
+        generateNum.isEnabled = false
+
+    }
+}
 
 
 
